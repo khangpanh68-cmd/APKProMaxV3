@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> APK Pro Max V3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #ff007a;
+            --primary: #7000ff;
+            --bg: #050505;
+            --card: #121212;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        /* Header phong cách Futuristic */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 0 0 30px 30px;
+            margin: -20px -20px 30px -20px;
+            box-shadow: 0 10px 30px rgba(112, 0, 255, 0.3);
+        }
+
+        .header h1 { margin: 0; font-size: 24px; letter-spacing: 2px; }
+        .header p { opacity: 0.8; font-size: 12px; margin-top: 5px; }
+
+        /* Khung nhập liệu */
+        .search-box {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 45px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 12px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: var(--text);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        /* Kết quả & Lịch sử */
+        .result-section, .history-section {
+            display: none;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            border: 1px solid #333;
+            animation: slideUp 0.4s ease;
+        }
+
+        .history-section { display: block; }
+        .history-title { font-size: 14px; color: #888; margin-bottom: 10px; display: flex; justify-content: space-between; }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #1a1a1a;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .history-item i { margin-right: 10px; color: var(--primary); }
+
+        .source-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .source-card {
+            background: #252525;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            font-size: 12px;
+            border: 1px solid #444;
+        }
+
+        .source-card i { font-size: 20px; margin-bottom: 8px; display: block; }
+        .source-card:hover { border-color: var(--accent); }
+
+        /* Hiệu ứng loading */
+        .shimmer {
+            background: linear-gradient(90deg, #222 25%, #333 50%, #222 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>APK Chplay V3</h1>
+        <p>Link Tải CHPlay Thành APK</p>
+    </div>
+
+    <div class="search-box">
+        <div class="input-wrapper">
+            <i class="fa-solid fa-brands fa-google-play"></i>
+            <input type="text" id="pkgInput" placeholder="Dán link ứng dụng hoặc Package ID...">
+        </div>
+        <button onclick="processRequest()"><i class="fa-solid fa-bolt"></i> PHÂN TÍCH LINK</button>
+    </div>
+
+    <div id="loader" style="display:none; text-align:center; padding: 20px;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 30px; color: var(--accent);"></i>
+        <p style="font-size: 12px; margin-top: 10px;">Đang giải mã dữ liệu Google Play...</p>
+    </div>
+
+    <div id="resultBox" class="result-section">
+        <div style="text-align: left;">
+            <span style="color:var(--accent); font-size: 12px; font-weight: bold;">KẾT QUẢ PHÂN TÍCH:</span>
+            <h3 id="appIdDisplay" style="margin: 5px 0 20px 0; font-size: 16px; word-break: break-all;"></h3>
+            
+            <div class="source-grid">
+                <a id="src1" class="source-card" href="#">
+                    <i class="fa-solid fa-cloud-arrow-down" style="color: #00ff88;"></i>
+                    Server 1 (Direct)
+                </a>
+                <a id="src2" class="source-card" href="#" target="_blank">
+                    <i class="fa-solid fa-box-open" style="color: #00d9ff;"></i>
+                    Server 2 (Store)
+                </a>
+                <a id="src3" class="source-card" href="#" target="_blank">
+                    <i class="fa-solid fa-shield-halved" style="color: #ffcf00;"></i>
+                    Server 3 (Mirror)
+                </a>
+                <a id="src4" class="source-card" href="#" target="_blank">
+                    <i class="fa-solid fa-code-compare" style="color: #ff6b00;"></i>
+                    Check Info
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <div class="history-title">
+            <span>LỊCH SỬ GẦN ĐÂY</span>
+            <span onclick="clearHistory()" style="cursor:pointer; color: var(--accent);">Xoá hết</span>
+        </div>
+        <div id="historyList"></div>
+    </div>
+</div>
+
+<script>
+    // Khởi tạo ứng dụng
+    window.onload = displayHistory;
+
+    function processRequest() {
+        const input = document.getElementById('pkgInput').value.trim();
+        const pkgId = extractPackageId(input);
+
+        if (!pkgId) {
+            alert("Vui lòng nhập link hoặc ID hợp lệ!");
+            return;
+        }
+
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('resultBox').style.display = 'none';
+
+        // Giả lập xử lý Deep-link
+        setTimeout(() => {
+            showResult(pkgId);
+            saveToHistory(pkgId);
+        }, 1500);
+    }
+
+    function extractPackageId(str) {
+        if (str.includes('id=')) {
+            return str.split('id=')[1].split('&')[0];
+        } else if (str.includes('/')) {
+            return str.split('/').pop().split('?')[0];
+        } else if (str.length > 3) {
+            return str;
+        }
+        return null;
+    }
+
+    function showResult(id) {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('appIdDisplay').innerText = id;
+
+        // Multi-Source Engine
+        document.getElementById('src1').href = `https://d.apkpure.com/b/APK/${id}?version=latest`;
+        document.getElementById('src2').href = `https://apps.evozi.com/apk-downloader/?id=${id}`;
+        document.getElementById('src3').href = `https://apk-dl.com/${id}`;
+        document.getElementById('src4').href = `https://play.google.com/store/apps/details?id=${id}`;
+    }
+
+    function saveToHistory(id) {
+        let history = JSON.parse(localStorage.getItem('apk_history') || '[]');
+        if (!history.includes(id)) {
+            history.unshift(id);
+            if (history.length > 5) history.pop();
+            localStorage.setItem('apk_history', JSON.stringify(history));
+            displayHistory();
+        }
+    }
+
+    function displayHistory() {
+        const history = JSON.parse(localStorage.getItem('apk_history') || '[]');
+        const container = document.getElementById('historyList');
+        container.innerHTML = history.length ? '' : '<p style="color:#555; font-size:12px;">Chưa có dữ liệu tải.</p>';
+        
+        history.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `<i class="fa-brands fa-android"></i> ${item}`;
+            div.onclick = () => { document.getElementById('pkgInput').value = item; processRequest(); };
+            container.appendChild(div);
+        });
+    }
+
+    function clearHistory() {
+        localStorage.removeItem('apk_history');
+        displayHistory();
+    }
+</script>
+
+</body>
+</html>
